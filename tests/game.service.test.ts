@@ -14,8 +14,8 @@ import {
 } from "@/exceptions/gameExceptions";
 
 describe("GameService", () => {
-  describe("newGame", () => {
-    it("should initialize game with word from provider", async () => {
+  describe("Starting a new game", () => {
+    it("should start a new game in PLAYING status with no prior guesses", async () => {
       // arrange
       const stubWordProvider: WordProvider = new FakeWordProvider(
         "salut" as Word,
@@ -33,7 +33,7 @@ describe("GameService", () => {
       expect(game?.status).toBe("PLAYING");
     });
 
-    it("should throw error if the provider returns an invalid word", async () => {
+    it("should prevent starting a game when the word provider returns an invalid word", async () => {
       // arrange
       const stubWordProvider: WordProvider = new FakeWordProvider(
         "sucré" as Word,
@@ -47,7 +47,7 @@ describe("GameService", () => {
       await expect(result).rejects.toThrow(InvalidWordError);
     });
 
-    it("should throw error if the API call fails", async () => {
+    it("should prevent starting a game when the word provider is unavailable", async () => {
       // arrange
       const failingWordProvider: WordProvider = new FailingWordProvider();
       const gameService = new GameService(failingWordProvider);
@@ -60,7 +60,7 @@ describe("GameService", () => {
     });
   });
 
-  describe("try", () => {
+  describe("Submitting a guess", () => {
     let gameService: GameService;
 
     beforeEach(async () => {
@@ -71,7 +71,7 @@ describe("GameService", () => {
       await gameService.newGame();
     });
 
-    it("should update tries when a try is made", async () => {
+    it("should record each submitted guess", async () => {
       // arrange
       // nothing to arrange since beforeEach already initializes the game
 
@@ -83,7 +83,7 @@ describe("GameService", () => {
       expect(game?.tries.length).toBe(1);
     });
 
-    it("should update status to WIN when a try is made correctly", async () => {
+    it("should end the game as won when the correct word is guessed", async () => {
       // arrange
       // nothing to arrange since beforeEach already initializes the game
 
@@ -95,7 +95,7 @@ describe("GameService", () => {
       expect(game?.status).toBe("WIN");
     });
 
-    it("should update status to LOSE after 6 incorrect tries", async () => {
+    it("should end the game as lost after 6 incorrect guesses", async () => {
       // arrange
       // nothing to arrange since beforeEach already initializes the game
 
@@ -109,7 +109,7 @@ describe("GameService", () => {
       expect(game?.status).toBe("LOSE");
     });
 
-    it("should not allow tries after game is won", async () => {
+    it("should reject further guesses once the game is already won", async () => {
       // arrange
       gameService.try("salut");
 
@@ -120,7 +120,7 @@ describe("GameService", () => {
       expect(result).toThrow(NoGameInProgressError);
     });
 
-    it("should throw error if try is made with an invalid word", async () => {
+    it("should reject a guess that is not a valid 5-letter word", async () => {
       // arrange
       // nothing to arrange since beforeEach already initializes the game
 
@@ -131,7 +131,7 @@ describe("GameService", () => {
       expect(result).toThrow(InvalidWordError);
     });
 
-    it("should throw error if try is made with a word not in the dictionary", () => {
+    it("should reject a guess that is not in the dictionary", () => {
       // arrange
       // nothing to arrange since beforeEach already initializes the game
 
@@ -142,7 +142,7 @@ describe("GameService", () => {
       expect(result).toThrow(WordNotInDictionaryError);
     });
 
-    it("should throw error if try is made when no game in progress", () => {
+    it("should reject a guess when no game has been started", () => {
       // arrange
       const stubWordProvider = {
         getNewWord: async () => "salut" as Word,

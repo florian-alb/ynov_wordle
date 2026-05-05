@@ -5,8 +5,8 @@ import { Word } from "@/types/word";
 import { describe, expect, it } from "vitest";
 
 describe("Game rules", () => {
-  describe("createWord", () => {
-    it("should consider a word valid only if it has exactly 5 letters", async () => {
+  describe("Word creation", () => {
+    it("should accept a word with exactly 5 plain letters", async () => {
       // arrange
       const word = "salut";
       // act
@@ -15,7 +15,7 @@ describe("Game rules", () => {
       expect(result).toBe("salut");
     });
 
-    it("should consider a word invalid if it contains more or less than 5 letters", async () => {
+    it("should reject a word that does not have exactly 5 letters", async () => {
       // arrange
       const word = "word";
       // act
@@ -24,7 +24,7 @@ describe("Game rules", () => {
       expect(result).toThrow(InvalidWordError);
     });
 
-    it("should consider a word invalid if it contains accents", async () => {
+    it("should reject a word containing accented characters", async () => {
       // arrange
       const word = "salût";
       // act
@@ -33,7 +33,7 @@ describe("Game rules", () => {
       expect(result).toThrow(InvalidWordError);
     });
 
-    it("should consider a word invalid if it contains special characters", async () => {
+    it("should reject a word containing special characters", async () => {
       // arrange
       const word = "salut!";
       // act
@@ -42,7 +42,7 @@ describe("Game rules", () => {
       expect(result).toThrow(InvalidWordError);
     });
 
-    it("should consider a word invalid if it contains numbers", async () => {
+    it("should reject a word containing numbers", async () => {
       // arrange
       const word = "salut1";
       // act
@@ -52,8 +52,8 @@ describe("Game rules", () => {
     });
   });
 
-  describe("isWordValid", () => {
-    it("should return true if the word is in the dictionary", () => {
+  describe("Dictionary lookup", () => {
+    it("should accept a word that exists in the dictionary", () => {
       // arrange
       const word = "salut" as Word;
       // act
@@ -62,7 +62,7 @@ describe("Game rules", () => {
       expect(result).toBe(true);
     });
 
-    it("should return false if the word is not in the dictionary", () => {
+    it("should reject a word that is not in the dictionary", () => {
       // arrange
       const word = "saluo" as Word;
       // act
@@ -71,13 +71,20 @@ describe("Game rules", () => {
       expect(result).toBe(false);
     });
 
-    it("should return true for every word in WORD_LIST", () => {
-      WORD_LIST.forEach((word) => {
-        expect(isWordValid(word)).toBe(true);
+    it("should validate all words from the official word list", () => {
+      // Arrange
+      const words = WORD_LIST;
+
+      // Act
+      const results = words.map((word) => isWordValid(word));
+
+      // Assert
+      results.forEach((result) => {
+        expect(result).toBe(true);
       });
     });
 
-    it("should return false for an uppercase version of a valid word", () => {
+    it("should reject an uppercase version of a valid word", () => {
       // arrange
       const word = "SALUT" as Word;
       // act
@@ -87,7 +94,7 @@ describe("Game rules", () => {
     });
   });
 
-  describe("compareWord", () => {
+  describe("Letter feedback", () => {
     it("should mark letter as CORRECT when it matches the same position", () => {
       // arrange
       const input = "salut" as Word;
