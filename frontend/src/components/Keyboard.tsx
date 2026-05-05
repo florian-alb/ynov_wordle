@@ -28,7 +28,11 @@ function Key({ label, state, onPress, disabled }: KeyProps) {
 
   useEffect(() => {
     if (state && state !== prevState.current && keyRef.current) {
-      gsap.fromTo(keyRef.current, { scale: 1.25 }, { scale: 1, duration: 0.3, ease: "back.out(2)" });
+      gsap.fromTo(
+        keyRef.current,
+        { scale: 1.25 },
+        { scale: 1, duration: 0.3, ease: "back.out(2)" },
+      );
     }
     prevState.current = state;
   }, [state]);
@@ -66,7 +70,7 @@ export default function Keyboard({
   disabled,
 }: KeyboardProps) {
   function toKeyValue(label: string): string {
-    if (label === "ENTRÉE") return "ENTER";
+    if (label === "⮑") return "ENTER";
     if (label === "⌫") return "BACKSPACE";
     return label.toLowerCase();
   }
