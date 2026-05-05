@@ -10,7 +10,6 @@ import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 import GameBoard, { type GameBoardHandle } from "./components/GameBoard";
 import Keyboard from "./components/Keyboard";
-import DebugPanel from "./components/DebugPanel";
 import EasterEgg from "./components/EasterEgg";
 
 const PRIORITY: Record<LetterFeedback, number> = {
@@ -257,7 +256,6 @@ export default function App() {
           </>
         )}
       </main>
-      <DebugPanel />
       {easterEgg && <EasterEgg onDone={() => setEasterEgg(false)} />}
     </div>
   );
