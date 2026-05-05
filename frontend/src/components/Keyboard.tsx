@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { LetterFeedback } from "@/types/letter";
 
@@ -24,6 +24,14 @@ interface KeyProps {
 function Key({ label, state, onPress, disabled }: KeyProps) {
   const keyRef = useRef<HTMLButtonElement>(null);
   const isWide = label === "⮑" || label === "⌫";
+  const prevState = useRef<LetterFeedback | undefined>(undefined);
+
+  useEffect(() => {
+    if (state && state !== prevState.current && keyRef.current) {
+      gsap.fromTo(keyRef.current, { scale: 1.25 }, { scale: 1, duration: 0.3, ease: "back.out(2)" });
+    }
+    prevState.current = state;
+  }, [state]);
 
   function handleClick() {
     if (disabled) return;

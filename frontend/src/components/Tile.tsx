@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { spawnTileParticles } from "../utils/particles";
 
 type LetterFeedback = "CORRECT" | "MISPLACED" | "ABSENT";
 
@@ -10,6 +11,7 @@ interface TileProps {
   revealDelay?: number;
   isBouncing?: boolean;
   bounceDelay?: number;
+  isCursor?: boolean;
 }
 
 export default function Tile({
@@ -19,6 +21,7 @@ export default function Tile({
   revealDelay = 0,
   isBouncing,
   bounceDelay = 0,
+  isCursor,
 }: TileProps) {
   const tileRef = useRef<HTMLDivElement>(null);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -34,9 +37,18 @@ export default function Tile({
     if (!isRevealing || !tileRef.current) return;
     setShowFeedback(false);
 
+    const rect = tileRef.current.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
     const tl = gsap.timeline({ delay: revealDelay });
     tl.to(tileRef.current, { rotateX: 90, duration: 0.22, ease: "power2.in" });
-    tl.call(() => setShowFeedback(true));
+    tl.call(() => {
+      setShowFeedback(true);
+      if (feedback === "CORRECT" || feedback === "MISPLACED") {
+        spawnTileParticles(cx, cy, feedback);
+      }
+    });
     tl.to(tileRef.current, { rotateX: 0, duration: 0.22, ease: "power2.out" });
 
     return () => { tl.kill(); };
@@ -53,17 +65,23 @@ export default function Tile({
     return () => { tl.kill(); };
   }, [isBouncing, bounceDelay]);
 
-  // Pop animation when a new letter is typed
+  // Pop-in on type, pop-out on delete
   useEffect(() => {
-    if (letter && letter !== prevLetter.current && tileRef.current) {
-      gsap.fromTo(tileRef.current, { scale: 1.1 }, { scale: 1, duration: 0.1, ease: "power2.out" });
+    if (!tileRef.current) return;
+    if (letter && letter !== prevLetter.current) {
+      gsap.fromTo(tileRef.current, { scale: 1.12 }, { scale: 1, duration: 0.1, ease: "power2.out" });
+    } else if (!letter && prevLetter.current) {
+      gsap.fromTo(tileRef.current, { scale: 1 }, {
+        scale: 0.78, duration: 0.07, ease: "power2.in",
+        onComplete: () => { if (tileRef.current) gsap.to(tileRef.current, { scale: 1, duration: 0.08, ease: "power2.out" }); },
+      });
     }
     prevLetter.current = letter;
   }, [letter]);
 
   let className = "tile";
   if (!letter) {
-    className += " tile-empty";
+    className += isCursor ? " tile-cursor" : " tile-empty";
   } else if (showFeedback && feedback) {
     className += ` tile-${feedback.toLowerCase()}`;
   } else {

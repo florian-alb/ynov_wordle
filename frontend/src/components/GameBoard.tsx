@@ -14,6 +14,7 @@ interface GameBoardProps {
 
 export interface GameBoardHandle {
   deconstruct(onComplete: () => void): void;
+  triggerLose(): void;
 }
 
 const ROWS = 6;
@@ -25,9 +26,10 @@ interface RowData {
   isRevealing: boolean;
   shakeId: number | null;
   isBouncing: boolean;
+  cursorCol?: number;
 }
 
-function GameRow({ letters, feedbacks, isRevealing, shakeId, isBouncing }: RowData) {
+function GameRow({ letters, feedbacks, isRevealing, shakeId, isBouncing, cursorCol }: RowData) {
   const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,6 +62,7 @@ function GameRow({ letters, feedbacks, isRevealing, shakeId, isBouncing }: RowDa
           revealDelay={i * 0.11}
           isBouncing={isBouncing}
           bounceDelay={i * 0.07}
+          isCursor={i === cursorCol}
         />
       ))}
     </div>
@@ -74,19 +77,25 @@ const GameBoard = forwardRef<GameBoardHandle, GameBoardProps>(function GameBoard
 
   useImperativeHandle(ref, () => ({
     deconstruct(onComplete) {
-      if (!boardRef.current) {
-        onComplete();
-        return;
-      }
+      if (!boardRef.current) { onComplete(); return; }
       const tiles = boardRef.current.querySelectorAll(".tile");
       gsap.to(tiles, {
-        rotateY: 90,
-        opacity: 0,
-        duration: 0.25,
-        ease: "power2.in",
-        stagger: { amount: 0.55, from: "end" },
-        onComplete,
+        rotateY: 90, opacity: 0, duration: 0.25, ease: "power2.in",
+        stagger: { amount: 0.55, from: "end" }, onComplete,
       });
+    },
+    triggerLose() {
+      if (!boardRef.current) return;
+      const board = boardRef.current;
+      const tl = gsap.timeline();
+      tl.to(board, { x: 14, duration: 0.06, ease: "none" });
+      tl.to(board, { x: -14, duration: 0.06, ease: "none" });
+      tl.to(board, { x: 10, duration: 0.06, ease: "none" });
+      tl.to(board, { x: -10, duration: 0.06, ease: "none" });
+      tl.to(board, { x: 0, duration: 0.06, ease: "none" });
+      const tiles = board.querySelectorAll(".tile");
+      tl.to(tiles, { opacity: 0.35, duration: 0.35, stagger: { amount: 0.5, from: "random" } }, "+=0.1");
+      tl.to(tiles, { opacity: 1, duration: 0.35, stagger: { amount: 0.5, from: "random" } });
     },
   }));
 
@@ -130,6 +139,7 @@ const GameBoard = forwardRef<GameBoardHandle, GameBoardProps>(function GameBoard
         isRevealing: false,
         shakeId: shakeState?.row === rowIndex ? shakeState.id : null,
         isBouncing: false,
+        cursorCol: currentGuess.length < COLS ? currentGuess.length : undefined,
       };
     }
 
