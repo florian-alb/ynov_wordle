@@ -1,15 +1,14 @@
 import { Word } from "@/types";
+import { WORD_LIST } from "@/data/wordList";
 
 export interface WordProvider {
   getNewWord(): Promise<Word>;
 }
 
-export class HttpWordProvider implements WordProvider {
+export class DictWordProvider implements WordProvider {
   async getNewWord(): Promise<Word> {
-    const response = await fetch("https://trouve-mot.fr/api/size/5");
-    const data = await response.json();
-
-    return data[0].name as Word;
+    const randomIndex = Math.floor(Math.random() * WORD_LIST.length);
+    return WORD_LIST[randomIndex];
   }
 }
 

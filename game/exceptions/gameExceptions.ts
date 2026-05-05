@@ -5,6 +5,13 @@ export class InvalidWordError extends Error {
   }
 }
 
+export class WordNotInDictionaryError extends Error {
+  constructor(word: string) {
+    super(`"${word}" is not in the dictionary.`);
+    this.name = "WordNotInDictionaryError";
+  }
+}
+
 export class NoGameInProgressError extends Error {
   constructor(status?: string) {
     switch (status) {

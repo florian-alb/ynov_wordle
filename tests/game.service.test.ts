@@ -10,6 +10,7 @@ import { InvalidApiError } from "@/exceptions/apiExceptions";
 import {
   InvalidWordError,
   NoGameInProgressError,
+  WordNotInDictionaryError,
 } from "@/exceptions/gameExceptions";
 
 describe("GameService", () => {
@@ -75,7 +76,7 @@ describe("GameService", () => {
       // nothing to arrange since beforeEach already initializes the game
 
       // act
-      gameService.try("saluo");
+      gameService.try("rouge");
       const game = gameService.getGame();
 
       // assert
@@ -100,7 +101,7 @@ describe("GameService", () => {
 
       // act
       for (let i = 0; i < 6; i++) {
-        gameService.try("saluo");
+        gameService.try("rouge");
       }
       const game = gameService.getGame();
 
@@ -113,7 +114,7 @@ describe("GameService", () => {
       gameService.try("salut");
 
       // act
-      const result = () => gameService.try("saluo");
+      const result = () => gameService.try("rouge");
 
       // assert
       expect(result).toThrow(NoGameInProgressError);
@@ -128,6 +129,17 @@ describe("GameService", () => {
 
       // assert
       expect(result).toThrow(InvalidWordError);
+    });
+
+    it("should throw error if try is made with a word not in the dictionary", () => {
+      // arrange
+      // nothing to arrange since beforeEach already initializes the game
+
+      // act
+      const result = () => gameService.try("saluo");
+
+      // assert
+      expect(result).toThrow(WordNotInDictionaryError);
     });
 
     it("should throw error if try is made when no game in progress", () => {

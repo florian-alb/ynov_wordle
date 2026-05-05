@@ -1,5 +1,6 @@
 import { InvalidWordError } from "@/exceptions/gameExceptions";
 import { Word, Try, Letter } from "@/types";
+import { WORD_LIST } from "@/data/wordList";
 
 export function createWord(str: string): Word {
   if (!/^[a-z]{5}$/i.test(str)) {
@@ -46,4 +47,8 @@ function findAllIndexes(word: string, letter: string): number[] {
 
 export function isWin(wordTry: Try) {
   return wordTry.word.every((letter) => letter.feedback === "CORRECT");
+}
+
+export function isWordValid(word: Word): boolean {
+  return WORD_LIST.includes(word);
 }

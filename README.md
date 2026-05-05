@@ -31,11 +31,11 @@ Clone du jeu Wordle en TypeScript, avec une logique de jeu découplée du fronte
 
 Le joueur dispose de **6 essais** pour deviner un mot de 5 lettres. Après chaque essai, chaque lettre reçoit un feedback :
 
-| Feedback    | Signification                                      |
-|-------------|----------------------------------------------------|
-| `CORRECT`   | Lettre correcte et bien placée                     |
-| `MISPLACED` | Lettre présente dans le mot mais mal placée        |
-| `ABSENT`    | Lettre absente du mot                              |
+| Feedback    | Signification                               |
+| ----------- | ------------------------------------------- |
+| `CORRECT`   | Lettre correcte et bien placée              |
+| `MISPLACED` | Lettre présente dans le mot mais mal placée |
+| `ABSENT`    | Lettre absente du mot                       |
 
 Les lettres en double sont gérées correctement : une lettre ne peut être marquée `MISPLACED` que le nombre de fois où elle apparaît dans le mot cible.
 
@@ -67,7 +67,7 @@ La logique de jeu est entièrement isolée dans `game/` et ne dépend d'aucun fr
 
 ```
 WordProvider (interface)
-├── HttpWordProvider   → appel API (trouve-mot.fr)
+├── DictWordProvider   → appel API (trouve-mot.fr)
 ├── FakeWordProvider   → stub pour les tests
 └── FailingWordProvider → simulation d'erreur API
 ```

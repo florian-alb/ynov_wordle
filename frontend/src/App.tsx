@@ -1,5 +1,5 @@
 import { GameService } from "@/services/game.service";
-import { HttpWordProvider } from "@/services/wordProvider";
+import { DictWordProvider } from "@/services/wordProvider";
 import { Game } from "@/types/game";
 import { useRef, useState } from "react";
 import "./App.css";
@@ -55,7 +55,7 @@ function gameGrid(game: Game, onSubmit) {
 }
 
 export default function App() {
-  const gameServiceRef = useRef(new GameService(new HttpWordProvider()));
+  const gameServiceRef = useRef(new GameService(new DictWordProvider()));
   const gameService = gameServiceRef.current;
 
   const [game, setGame] = useState<Game | null>(null);

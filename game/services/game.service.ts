@@ -1,10 +1,11 @@
 import { Game } from "@/types";
 import { WordProvider } from "@/services/wordProvider";
-import { compareWord, createWord, isWin } from "@/rules/gameUtils";
+import { compareWord, createWord, isWin, isWordValid } from "@/rules/gameUtils";
 import { InvalidApiError } from "@/exceptions/apiExceptions";
 import {
   InvalidWordError,
   NoGameInProgressError,
+  WordNotInDictionaryError,
 } from "@/exceptions/gameExceptions";
 
 export class GameService {
@@ -35,6 +36,9 @@ export class GameService {
 
     try {
       const validWord = createWord(word);
+      if (!isWordValid(validWord)) {
+        throw new WordNotInDictionaryError(word);
+      }
       const tryResult = compareWord(validWord, this.game.word);
       this.game.tries.push(tryResult);
 

@@ -1,5 +1,6 @@
 import { InvalidWordError } from "@/exceptions/gameExceptions";
-import { compareWord, createWord } from "@/rules/gameUtils";
+import { compareWord, createWord, isWordValid } from "@/rules/gameUtils";
+import { WORD_LIST } from "@/data/wordList";
 import { Word } from "@/types/word";
 import { describe, expect, it } from "vitest";
 
@@ -48,6 +49,41 @@ describe("Game rules", () => {
       const result = () => createWord(word);
       // assert
       expect(result).toThrow(InvalidWordError);
+    });
+  });
+
+  describe("isWordValid", () => {
+    it("should return true if the word is in the dictionary", () => {
+      // arrange
+      const word = "salut" as Word;
+      // act
+      const result = isWordValid(word);
+      // assert
+      expect(result).toBe(true);
+    });
+
+    it("should return false if the word is not in the dictionary", () => {
+      // arrange
+      const word = "saluo" as Word;
+      // act
+      const result = isWordValid(word);
+      // assert
+      expect(result).toBe(false);
+    });
+
+    it("should return true for every word in WORD_LIST", () => {
+      WORD_LIST.forEach((word) => {
+        expect(isWordValid(word)).toBe(true);
+      });
+    });
+
+    it("should return false for an uppercase version of a valid word", () => {
+      // arrange
+      const word = "SALUT" as Word;
+      // act
+      const result = isWordValid(word);
+      // assert
+      expect(result).toBe(false);
     });
   });
 
