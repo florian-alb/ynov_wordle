@@ -200,6 +200,13 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  // Auto-start a game on mount
+  useEffect(() => {
+    if (!game) {
+      startNewGame();
+    }
+  }, [game]);
+
   return (
     <div className="app">
       <Toaster
@@ -226,14 +233,7 @@ export default function App() {
       </header>
 
       <main className="main">
-        {!game ? (
-          <div className="start-screen">
-            <p className="subtitle">Devinez le mot de 5 lettres en 6 essais</p>
-            <button className="btn-primary" onClick={startNewGame}>
-              Nouvelle Partie
-            </button>
-          </div>
-        ) : (
+        {game && (
           <>
             <GameBoard
               key={boardKey}
